@@ -1,54 +1,46 @@
-import { MdMenu, MdSearch, MdKey, MdToggleOff } from "react-icons/md";
+import { MdMenu, MdSearch, MdKey } from "react-icons/md";
+import ThemeToggle from "../ui/ThemeToggle";
 
-function Header() {
+function Header({ sidebarOpen, setSidebarOpen, isBlueTheme, setIsBlueTheme }) {
   return (
-    <nav className="sticky top-0 z-50 px-10 py-4 shadow-md bg-[#F871D1]">
+    <nav
+      className="sticky top-0 z-50 px-10 py-4 shadow-md"
+      style={{ backgroundColor: "var(--primary)" }}
+    >
       <div className="flex items-center justify-between">
-        {/* left */}
+        {/* Left */}
         <div className="flex items-center gap-4">
-          <button className="text-white hover:scale-110 transition">
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="cursor-pointer text-white transition hover:scale-110 active:scale-95"
+          >
             <MdMenu size={32} />
           </button>
 
-          <h1 className="text-white text-2xl font-semibold whitespace-nowrap">
-            Reko
-          </h1>
+          <h1 className="text-2xl font-semibold text-white">Reko</h1>
         </div>
 
-        {/* right */}
+        {/* Right */}
         <div className="flex items-center gap-4">
-          {/* search */}
           <div className="relative w-60">
-            <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-white z-20 pointer-events-none" />
+            <MdSearch
+              size={20}
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-white"
+            />
 
             <input
               type="text"
               placeholder="Search dramas..."
-              className="
-                w-full
-                rounded-full
-                border-2
-                border-white/50
-                bg-white/20
-                py-1
-                pl-10
-                pr-4
-                text-sm
-                text-white
-                placeholder-white/80
-                outline-none
-                backdrop-blur-sm
-              "
+              className="w-full rounded-full border-2 border-white/50 bg-white/20 py-1 pl-10 pr-4 text-sm text-white placeholder-white/80 outline-none"
             />
           </div>
 
-          {/* theme */}
-          <button className="text-white hover:scale-110 transition">
-            <MdToggleOff size={36} />
-          </button>
+          <ThemeToggle
+            isBlueTheme={isBlueTheme}
+            setIsBlueTheme={setIsBlueTheme}
+          />
 
-          {/* admin */}
-          <button className="text-white hover:scale-110 transition">
+          <button className="cursor-pointer text-white transition hover:scale-110 active:scale-95">
             <MdKey size={28} />
           </button>
         </div>
