@@ -1,49 +1,105 @@
 import { useState, useEffect } from "react";
 import { MovieContext } from "./MovieContext";
-import initialMovies from "../data/movies.json";
+import axios from "axios";
+
+const API_URL = "http://localhost:5000/movies";
 
 export const MovieProvider = ({ children }) => {
-  // 1. Start with an empty list and a loading state (Matching PDF Page 7)
   const [movieList, setMovieList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 2. Use useEffect to handle the "Side Effect" of data loading
+  // Fetch all movies
+  const fetchMovies = async () => {
+    try {
+      const response = await axios.get(API_URL);
+      setMovieList(response.data);
+    } catch (error) {
+      console.error("Error fetching movies:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    // Simulating an API network request with an 800ms delay
-    const fetchMovies = () => {
-      setTimeout(() => {
-        setMovieList(initialMovies); // Populate data
-        setLoading(false); // Turn off loading state
-      }, 800);
+    const loadMovies = async () => {
+      await fetchMovies();
     };
 
-    fetchMovies();
-  }, []); // Empty array ensures this runs only ONCE on mount
+    loadMovies();
+  }, []);
 
-  const handleToggleLike = (movieId) => {
-    setMovieList((prevMovies) =>
-      prevMovies.map((movie) =>
-        movie.id === movieId ? { ...movie, liked: !movie.liked } : movie,
-      ),
-    );
+  // ========================
+  // ADD MOVIE
+  // ========================
+  const handleAddNewMovie = async (newMovie) => {
+    try {
+      const response = await axios.post(API_URL, newMovie);
+
+      setMovieList((prevMovies) => [response.data, ...prevMovies]);
+    } catch (error) {
+      console.error("Error adding movie:", error);
+    }
   };
 
-  const handleUpdateMovie = (updatedMovie) => {
-    setMovieList((prevMovies) =>
-      prevMovies.map((movie) =>
-        movie.id === updatedMovie.id ? updatedMovie : movie,
-      ),
-    );
+  // ========================
+  // UPDATE MOVIE
+  // ========================
+  const handleUpdateMovie = async (updatedMovie) => {
+    try {
+      const response = await axios.put(
+        `${API_URL}/${updatedMovie._id}`,
+        updatedMovie,
+      );
+
+      setMovieList((prevMovies) =>
+        prevMovies.map((movie) =>
+          movie._id === updatedMovie._id ? response.data : movie,
+        ),
+      );
+    } catch (error) {
+      console.error("Error updating movie:", error);
+    }
   };
 
-  const handleDeleteMovie = (movieId) => {
-    setMovieList((prevMovies) =>
-      prevMovies.filter((movie) => movie.id !== movieId),
-    );
+  // ========================
+  // DELETE MOVIE
+  // ========================
+  const handleDeleteMovie = async (movieId) => {
+    try {
+      await axios.delete(`${API_URL}/${movieId}`);
+
+      setMovieList((prevMovies) =>
+        prevMovies.filter((movie) => movie._id !== movieId),
+      );
+    } catch (error) {
+      console.error("Error deleting movie:", error);
+    }
   };
 
-  const handleAddNewMovie = (newMovie) => {
-    setMovieList((prevMovies) => [newMovie, ...prevMovies]);
+  // ========================
+  // TOGGLE LIKE
+  // ========================
+  const handleToggleLike = async (movieId) => {
+    try {
+      const movie = movieList.find((m) => m._id === movieId);
+
+      if (!movie) return;
+
+      const updatedMovie = {
+        ...movie,
+        liked: !movie.liked,
+      };
+
+      const response = await axios.put(`${API_URL}/${movieId}`, updatedMovie);
+
+      setMovieList((prevMovies) =>
+        prevMovies.map((movie) =>
+          movie._id === movieId ? response.data : movie,
+        ),
+      );
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
 
   return (

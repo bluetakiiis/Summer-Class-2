@@ -20,22 +20,43 @@ function App() {
 
     return movieList.filter((movie) => {
       const episodeCount = Number(movie.episodes);
+
       const matchesTheme = isBlueTheme ? episodeCount === 1 : episodeCount > 1;
 
       let matchesSection = false;
 
-      if (section === "watched") matchesSection = movie.list === "watched";
-      else if (section === "watchlist")
+      if (section === "watched") {
+        matchesSection = movie.list === "watched";
+      } else if (section === "watchlist") {
         matchesSection = movie.list === "watchlist";
-      else if (section === "liked") matchesSection = movie.liked === true;
+      } else if (section === "liked") {
+        matchesSection = movie.liked === true;
+      }
 
       return matchesTheme && matchesSection;
     });
   };
 
+  const renderMovies = (movies) => (
+    <>
+      {movies.length === 0 ? (
+        <div
+          className="flex h-40 items-center justify-center text-lg"
+          style={{ color: "var(--text-light)" }}
+        >
+          No movies found.
+        </div>
+      ) : (
+        movies.map((movie) => <MovieCard key={movie._id} movie={movie} />)
+      )}
+    </>
+  );
+
   return (
     <div
-      className={`flex flex-col h-screen w-full overflow-hidden ${isBlueTheme ? "blue-theme" : ""}`}
+      className={`flex flex-col h-screen w-full overflow-hidden ${
+        isBlueTheme ? "blue-theme" : ""
+      }`}
       style={{
         backgroundColor: "var(--background)",
         transition: "background-color 0.3s ease",
@@ -63,7 +84,6 @@ function App() {
               />
             )}
 
-            {}
             {loading ? (
               <div
                 className="flex h-40 items-center justify-center text-lg"
@@ -75,23 +95,17 @@ function App() {
               <Routes>
                 <Route
                   path="/watched"
-                  element={getFilteredMovies("watched").map((movie) => (
-                    <MovieCard key={movie.id} movie={movie} />
-                  ))}
+                  element={renderMovies(getFilteredMovies("watched"))}
                 />
 
                 <Route
                   path="/watchlist"
-                  element={getFilteredMovies("watchlist").map((movie) => (
-                    <MovieCard key={movie.id} movie={movie} />
-                  ))}
+                  element={renderMovies(getFilteredMovies("watchlist"))}
                 />
 
                 <Route
                   path="/liked"
-                  element={getFilteredMovies("liked").map((movie) => (
-                    <MovieCard key={movie.id} movie={movie} />
-                  ))}
+                  element={renderMovies(getFilteredMovies("liked"))}
                 />
 
                 <Route path="/" element={<Navigate to="/watched" replace />} />

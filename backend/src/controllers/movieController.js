@@ -1,52 +1,85 @@
 // src/controllers/movieController.js
 
-const MovieModel = require('../models/movieModel');
+const Movie = require("../models/Movie");
 
 // GET /movies
-exports.getAllMovies = (req, res) => {
-  const movies = MovieModel.getAll();
-  res.status(200).json(movies);
+exports.getAllMovies = async (req, res) => {
+  try {
+    const movies = await Movie.find().sort({ createdAt: -1 });
+    res.status(200).json(movies);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
 // GET /movies/:id
-exports.getMovieById = (req, res) => {
-  const id = req.params.id; 
-  const movie = MovieModel.getById(id);
-  
-  if (!movie) {
-    return res.status(404).json({ message: 'Movie not found' });
+exports.getMovieById = async (req, res) => {
+  try {
+    const movie = await Movie.findById(req.params.id);
+
+    if (!movie) {
+      return res.status(404).json({
+        message: "Movie not found",
+      });
+    }
+
+    res.status(200).json(movie);
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
   }
-  res.status(200).json(movie);
 };
 
 // POST /movies
-exports.createMovie = (req, res) => {
-  if (!req.body.title) {
-    return res.status(400).json({ message: 'Movie title is required' });
+exports.createMovie = async (req, res) => {
+  try {
+    const movie = await Movie.create(req.body);
+    res.status(201).json(movie);
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
   }
-  
-  const newMovie = MovieModel.create(req.body);
-  res.status(201).json(newMovie);
 };
 
 // PUT /movies/:id
-exports.updateMovie = (req, res) => {
-  const id = req.params.id;
-  const updatedMovie = MovieModel.update(id, req.body);
-  
-  if (!updatedMovie) {
-    return res.status(404).json({ message: 'Movie not found' });
+exports.updateMovie = async (req, res) => {
+  try {
+    const movie = await Movie.findByIdAndUpdate(req.params.id, req.body, {
+      returnDocument: "after",
+      runValidators: true,
+    });
+
+    if (!movie) {
+      return res.status(404).json({
+        message: "Movie not found",
+      });
+    }
+
+    res.status(200).json(movie);
+  } catch (err) {
+    res.status(400).json({
+      message: err.message,
+    });
   }
-  res.status(200).json(updatedMovie);
 };
 
 // DELETE /movies/:id
-exports.deleteMovie = (req, res) => {
-  const id = req.params.id;
-  const success = MovieModel.delete(id);
-  
-  if (!success) {
-    return res.status(404).json({ message: 'Movie not found' });
+exports.deleteMovie = async (req, res) => {
+  try {
+    const movie = await Movie.findByIdAndDelete(req.params.id);
+
+    if (!movie) {
+      return res.status(404).json({
+        message: "Movie not found",
+      });
+    }
+
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
   }
-  res.status(204).send(); 
 };

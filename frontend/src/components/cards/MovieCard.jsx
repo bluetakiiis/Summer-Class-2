@@ -79,7 +79,7 @@ function MovieCard({ movie }) {
 
                 {/* Favourite Button */}
                 <button
-                  onClick={() => handleToggleLike(movie.id)}
+                  onClick={() => handleToggleLike(movie._id)}
                   className="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 hover:scale-105 cursor-pointer"
                   style={{
                     background: "rgba(var(--primary-color-rgb),0.08)",

@@ -223,7 +223,7 @@ function EditForm({ movie, onSave, onCancel, onDelete }) {
             </button>
             <button
               type="button"
-              onClick={() => onDelete(movie.id)}
+              onClick={() => onDelete(movie._id)}
               className="rounded-full bg-[rgba(255,100,100,0.304)] px-5 py-2 text-[0.82rem] font-bold text-[#ea3b3b] transition-all duration-200 hover:scale-105 hover:bg-[rgba(255,100,100,0.42)]"
             >
               Delete
