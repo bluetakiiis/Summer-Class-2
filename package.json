@@ -1,0 +1,17 @@
+{
+  "devDependencies": {
+    "@rolldown/plugin-babel": "^0.2.3",
+    "babel-plugin-react-compiler": "^1.0.0"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "mongodb": "^7.5.0",
+    "mongoose": "^9.7.4",
+    "react-router-dom": "^6.28.0",
+    "tailwindcss": "^4.3.1",
+    "bcryptjs": "^3.0.3",
+    "jsonwebtoken": "^9.0.3"
+  }
+}

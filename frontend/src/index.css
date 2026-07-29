@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/* Pink Theme (Default) */
+
+:root {
+  --primary: #f871d1;
+  --background: #ffd9f4;
+  --sidebar: #ffc7e6;
+  --text: #f871d1;
+
+  --active-gradient: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    #ffeaf6 55%,
+    #ffd8ee 100%
+  );
+
+  --primary-color: var(--primary);
+  --primary-color-rgb: 248, 113, 209;
+
+  --secondary-color: #fd98e0;
+  --highlight-color: rgba(255, 182, 214, 0.9);
+
+  --card-color: #ffffff;
+
+  --text-color: #333333;
+  --text-light: #555555;
+
+  --sidebar-bg: var(--sidebar);
+  --body-bg: var(--background);
+  --body-bg-trans: #ffd9f4ef;
+
+  --primary-bg-light: rgba(248, 113, 209, 0.12);
+
+  --btn-shadow: rgba(248, 113, 209, 0.3);
+  --btn-shadow-hover: rgba(248, 113, 209, 0.4);
+
+  --wrap-shadow: rgba(248, 113, 209, 0.2);
+
+  --text-shadow-light: rgba(248, 113, 209, 0.25);
+
+  --shadow-light: rgba(248, 113, 209, 0.08);
+  --shadow-medium: rgba(248, 113, 209, 0.2);
+
+  --border-light: rgba(248, 113, 209, 0.25);
+
+  --focus-glow: rgba(248, 113, 209, 0.15);
+}
+
+/* Blue Theme */
+
+.blue-theme {
+  --primary: #7580fa;
+  --background: #d9daff;
+  --sidebar: #c9cefe;
+  --text: #7580fa;
+
+  --active-gradient: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    #eef0ff 55%,
+    #dde1ff 100%
+  );
+
+  --primary-color: var(--primary);
+  --primary-color-rgb: 117, 128, 250;
+
+  --secondary-color: #929bfd;
+  --highlight-color: rgba(183, 182, 255, 0.9);
+
+  --sidebar-bg: var(--sidebar);
+  --body-bg: var(--background);
+
+  --primary-bg-light: rgba(117, 128, 250, 0.12);
+
+  --btn-shadow: rgba(117, 128, 250, 0.3);
+  --btn-shadow-hover: rgba(117, 128, 250, 0.4);
+
+  --wrap-shadow: rgba(117, 128, 250, 0.2);
+
+  --text-shadow-light: rgba(117, 128, 250, 0.25);
+
+  --shadow-light: rgba(117, 128, 250, 0.08);
+  --shadow-medium: rgba(117, 128, 250, 0.2);
+
+  --border-light: rgba(117, 128, 250, 0.25);
+
+  --focus-glow: rgba(117, 128, 250, 0.15);
+}
+
+/* Global Styles */
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--body-bg);
+  color: var(--text-color);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Hide horizontal scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
