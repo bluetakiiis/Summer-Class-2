@@ -16,6 +16,11 @@ const savedItemSchema = new mongoose.Schema(
     tmdbId: {
       type: Number,
     },
+
+    mediaType: {
+      type: String,
+      enum: ["movie", "tv"],
+    },
   },
   { _id: false },
 );

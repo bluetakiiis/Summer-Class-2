@@ -15,6 +15,7 @@ export const getTrending = async (isBlueTheme) => {
   return res.data.results.map((item) => ({
     ...item,
     _id: `tmdb-${item.id}`,
+    media_type: item.media_type || (isBlueTheme ? "movie" : "tv"),
     title: item.title || item.name,
     image: `https://image.tmdb.org/t/p/w780${item.poster_path}`,
     totalEpisodes: isBlueTheme ? 1 : 2,
@@ -36,6 +37,7 @@ export const getPopular = async (isBlueTheme) => {
   return res.data.results.map((item) => ({
     ...item,
     _id: `tmdb-${item.id}`,
+    media_type: isBlueTheme ? "movie" : "tv",
     title: item.title || item.name,
     image: `https://image.tmdb.org/t/p/w780${item.poster_path}`,
     totalEpisodes: isBlueTheme ? 1 : 2,
@@ -57,6 +59,7 @@ export const getTopRated = async (isBlueTheme) => {
   return res.data.results.map((item) => ({
     ...item,
     _id: `tmdb-${item.id}`,
+    media_type: isBlueTheme ? "movie" : "tv",
     title: item.title || item.name,
     image: `https://image.tmdb.org/t/p/w780${item.poster_path}`,
     totalEpisodes: isBlueTheme ? 1 : 2,
@@ -79,6 +82,7 @@ export const searchShows = async (query, isBlueTheme) => {
   return res.data.results.map((item) => ({
     ...item,
     _id: `tmdb-${item.id}`,
+    media_type: isBlueTheme ? "movie" : "tv",
     title: item.title || item.name,
     image: `https://image.tmdb.org/t/p/w780${item.poster_path}`,
     totalEpisodes: isBlueTheme ? 1 : 2,
@@ -88,8 +92,9 @@ export const searchShows = async (query, isBlueTheme) => {
   }));
 };
 
-export const getTMDBDetails = async (tmdbId, isBlueTheme) => {
-  const endpoint = isBlueTheme ? `/movie/${tmdbId}` : `/tv/${tmdbId}`;
+// Updated: Accepts mediaType directly instead of depending on theme state
+export const getTMDBDetails = async (tmdbId, mediaType = "movie") => {
+  const endpoint = mediaType === "movie" ? `/movie/${tmdbId}` : `/tv/${tmdbId}`;
 
   const res = await axios.get(`${API}${endpoint}`, {
     params: {
@@ -102,6 +107,7 @@ export const getTMDBDetails = async (tmdbId, isBlueTheme) => {
   return {
     ...item,
     _id: `tmdb-${item.id}`,
+    media_type: mediaType,
     title: item.title || item.name,
     image: item.poster_path
       ? `https://image.tmdb.org/t/p/w780${item.poster_path}`

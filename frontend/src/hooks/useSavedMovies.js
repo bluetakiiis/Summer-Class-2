@@ -3,7 +3,7 @@ import { getTMDBDetails } from "../services/tmdbService";
 import { MovieContext } from "../context/MovieContext";
 
 export default function useSavedMovies(savedItems = []) {
-  const { movieList, isBlueTheme } = useContext(MovieContext);
+  const { movieList } = useContext(MovieContext);
   const [movies, setMovies] = useState([]);
 
   useEffect(() => {
@@ -24,7 +24,8 @@ export default function useSavedMovies(savedItems = []) {
           }
         } else {
           try {
-            const movie = await getTMDBDetails(item.tmdbId, isBlueTheme);
+            // Uses item.mediaType saved in DB
+            const movie = await getTMDBDetails(item.tmdbId, item.mediaType);
 
             if (movie) {
               result.push(movie);
@@ -39,7 +40,7 @@ export default function useSavedMovies(savedItems = []) {
     }
 
     loadMovies();
-  }, [savedItems, movieList, isBlueTheme]);
+  }, [savedItems, movieList]);
 
   return movies;
 }

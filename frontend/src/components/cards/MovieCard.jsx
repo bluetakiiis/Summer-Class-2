@@ -1,24 +1,16 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { FiHeart, FiCheck, FiPlus } from "react-icons/fi";
 import { MdEdit } from "react-icons/md";
 
-import EditForm from "../forms/EditForm";
 import { MovieContext } from "../../context/MovieContext";
 import { AuthContext } from "../../context/AuthContext";
 
-function MovieCard({ movie, progress }) {
-  const {
-    handleToggleLike,
-    handleToggleWatchlist,
-    handleToggleWatched,
-    handleUpdateMovie,
-    handleDeleteMovie,
-  } = useContext(MovieContext);
+function MovieCard({ movie, progress, onEdit }) {
+  const { handleToggleLike, handleToggleWatchlist, handleToggleWatched } =
+    useContext(MovieContext);
   const { user } = useContext(AuthContext);
   const location = useLocation();
-
-  const [isEditing, setIsEditing] = useState(false);
 
   const isAdminView =
     user?.role === "admin" ||
@@ -28,47 +20,57 @@ function MovieCard({ movie, progress }) {
   const tmdbBaseUrl =
     import.meta.env.VITE_TMDB_IMAGE_URL || "https://image.tmdb.org/t/p/w500";
 
-  // Evaluates to null instead of "" to prevent browser reload console warnings
   const posterImage =
     movie.posterURL ||
     movie.image ||
     (movie.poster_path ? `${tmdbBaseUrl}${movie.poster_path}` : null) ||
     null;
 
-  const rating =
-    movie.voteAverage ?? movie.vote_average ?? movie.rating ?? "N/A";
+  // Safely parse and format rating to 1 decimal place
+  const rawRating = movie.voteAverage ?? movie.vote_average ?? movie.rating;
+  const parsedRating = parseFloat(rawRating);
+  const rating = !isNaN(parsedRating) ? parsedRating.toFixed(1) : "N/A";
+
+  // Helper to determine whether the media is a movie or tv show
+  const mediaType =
+    movie.media_type ||
+    (movie.first_air_date || movie.number_of_episodes ? "tv" : "movie");
 
   const checkInList = (list) => {
+    if (!list || !Array.isArray(list)) return false;
+
     const currentTmdbId = movie.id || movie.tmdbId;
+    const currentLocalId = movie._id;
 
-    return (
-      list?.some((item) => {
-        if (item.source === "local") {
-          const targetId =
-            typeof item.movieId === "object" ? item.movieId?._id : item.movieId;
-          return String(targetId) === String(movie._id);
-        }
+    return list.some((item) => {
+      if (!item) return false;
 
-        return (
-          item.source === "tmdb" &&
-          Number(item.tmdbId) === Number(currentTmdbId)
+      // Handle local movie checks
+      if (item.source === "local" || (item.movieId && !item.tmdbId)) {
+        if (!currentLocalId) return false;
+        const targetId =
+          typeof item.movieId === "object" ? item.movieId?._id : item.movieId;
+        return Boolean(targetId && String(targetId) === String(currentLocalId));
+      }
+
+      // Handle TMDB movie checks
+      if (item.source === "tmdb" || item.tmdbId) {
+        if (!currentTmdbId) return false;
+        const targetTmdbId =
+          item.tmdbId ||
+          (typeof item.movieId !== "object" ? item.movieId : null);
+        return Boolean(
+          targetTmdbId && String(targetTmdbId) === String(currentTmdbId),
         );
-      }) || false
-    );
+      }
+
+      return false;
+    });
   };
 
   const isLiked = checkInList(user?.liked);
   const isWatchlist = checkInList(user?.watchlist);
   const isWatched = checkInList(user?.watched);
-
-  const handleSave = (updatedMovie) => {
-    handleUpdateMovie(updatedMovie);
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-  };
 
   const onLikeClick = (e) => {
     e.preventDefault();
@@ -80,6 +82,7 @@ function MovieCard({ movie, progress }) {
       handleToggleLike({
         source: "tmdb",
         tmdbId: movie.id || movie.tmdbId,
+        mediaType,
       });
     } else {
       handleToggleLike({
@@ -99,6 +102,7 @@ function MovieCard({ movie, progress }) {
       handleToggleWatchlist({
         source: "tmdb",
         tmdbId: movie.id || movie.tmdbId,
+        mediaType,
       });
     } else {
       handleToggleWatchlist({
@@ -118,6 +122,7 @@ function MovieCard({ movie, progress }) {
       handleToggleWatched({
         source: "tmdb",
         tmdbId: movie.id || movie.tmdbId,
+        mediaType,
       });
     } else {
       handleToggleWatched({
@@ -130,21 +135,10 @@ function MovieCard({ movie, progress }) {
   const onEditClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsEditing(true);
+    if (onEdit) {
+      onEdit(movie);
+    }
   };
-
-  if (isEditing) {
-    return (
-      <div className="col-span-full w-full">
-        <EditForm
-          movie={movie}
-          onSave={handleSave}
-          onCancel={handleCancel}
-          onDelete={handleDeleteMovie}
-        />
-      </div>
-    );
-  }
 
   return (
     <div className="group relative w-42.5 shrink-0 select-none">
@@ -194,7 +188,7 @@ function MovieCard({ movie, progress }) {
               className="shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold text-white shadow-xs"
               style={{ backgroundColor: "var(--primary)" }}
             >
-              {typeof rating === "number" ? rating.toFixed(1) : rating}
+              {rating}
             </span>
           </div>
         </div>
@@ -206,7 +200,7 @@ function MovieCard({ movie, progress }) {
             <button
               type="button"
               onClick={onEditClick}
-              className="edit-btn flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
               style={{ backgroundColor: "rgba(0, 0, 0, 0.55)" }}
               title="Edit Movie"
             >
@@ -214,10 +208,11 @@ function MovieCard({ movie, progress }) {
             </button>
           ) : (
             <>
+              {/* Like Button */}
               <button
                 type="button"
                 onClick={onLikeClick}
-                className="like-btn flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
                 style={{
                   backgroundColor: isLiked
                     ? "var(--primary)"
@@ -228,10 +223,11 @@ function MovieCard({ movie, progress }) {
                 <FiHeart size={18} className={isLiked ? "fill-white" : ""} />
               </button>
 
+              {/* Watchlist Button */}
               <button
                 type="button"
                 onClick={onWatchlistClick}
-                className="watchlist-btn flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
                 style={{
                   backgroundColor: isWatchlist
                     ? "var(--primary)"
@@ -241,13 +237,14 @@ function MovieCard({ movie, progress }) {
                   isWatchlist ? "Remove from Watchlist" : "Add to Watchlist"
                 }
               >
-                {isWatchlist ? <FiCheck size={18} /> : <FiPlus size={18} />}
+                <FiPlus size={18} />
               </button>
 
+              {/* Watched Button */}
               <button
                 type="button"
                 onClick={onWatchedClick}
-                className="watched-btn flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border border-white/10 text-white backdrop-blur-xl transition-all duration-200 hover:scale-105 shadow-md"
                 style={{
                   backgroundColor: isWatched
                     ? "var(--primary)"

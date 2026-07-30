@@ -48,7 +48,7 @@ exports.getAllUsers = async (req, res) => {
 // TOGGLE LIKE
 exports.toggleLike = async (req, res) => {
   try {
-    const { source, movieId, tmdbId } = req.body;
+    const { source, movieId, tmdbId, mediaType } = req.body;
 
     const user = await User.findById(req.user._id);
 
@@ -65,7 +65,11 @@ exports.toggleLike = async (req, res) => {
         );
       }
 
-      return item.source === "tmdb" && item.tmdbId === tmdbId;
+      return (
+        item.source === "tmdb" &&
+        Number(item.tmdbId) === Number(tmdbId) &&
+        item.mediaType === mediaType
+      );
     });
 
     if (index >= 0) {
@@ -75,6 +79,7 @@ exports.toggleLike = async (req, res) => {
         source,
         movieId,
         tmdbId,
+        mediaType,
       });
     }
 
@@ -87,13 +92,12 @@ exports.toggleLike = async (req, res) => {
       message: err.message,
     });
   }
-  console.log("LIKE BODY:", req.body);
 };
 
 // TOGGLE WATCHLIST
 exports.toggleWatchlist = async (req, res) => {
   try {
-    const { source, movieId, tmdbId } = req.body;
+    const { source, movieId, tmdbId, mediaType } = req.body;
 
     const user = await User.findById(req.user._id);
 
@@ -110,7 +114,11 @@ exports.toggleWatchlist = async (req, res) => {
         );
       }
 
-      return item.source === "tmdb" && item.tmdbId === tmdbId;
+      return (
+        item.source === "tmdb" &&
+        Number(item.tmdbId) === Number(tmdbId) &&
+        item.mediaType === mediaType
+      );
     });
 
     if (index >= 0) {
@@ -120,6 +128,7 @@ exports.toggleWatchlist = async (req, res) => {
         source,
         movieId,
         tmdbId,
+        mediaType,
       });
     }
 
@@ -137,7 +146,7 @@ exports.toggleWatchlist = async (req, res) => {
 // TOGGLE WATCHED
 exports.toggleWatched = async (req, res) => {
   try {
-    const { source, movieId, tmdbId } = req.body;
+    const { source, movieId, tmdbId, mediaType } = req.body;
 
     const user = await User.findById(req.user._id);
 
@@ -154,7 +163,11 @@ exports.toggleWatched = async (req, res) => {
         );
       }
 
-      return item.source === "tmdb" && item.tmdbId === tmdbId;
+      return (
+        item.source === "tmdb" &&
+        Number(item.tmdbId) === Number(tmdbId) &&
+        item.mediaType === mediaType
+      );
     });
 
     if (index >= 0) {
@@ -164,6 +177,7 @@ exports.toggleWatched = async (req, res) => {
         source,
         movieId,
         tmdbId,
+        mediaType,
       });
     }
 
