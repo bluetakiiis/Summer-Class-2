@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/auth";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = `${BASE_URL}/auth`;
 
 // Helper function to normalize user object, enforcing MongoDB '_id' format
 const normalizeUser = (user) => {
