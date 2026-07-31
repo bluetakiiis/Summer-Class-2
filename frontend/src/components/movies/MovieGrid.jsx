@@ -1,6 +1,6 @@
 import MovieCard from "../cards/MovieCard";
 
-function MovieGrid({ movies }) {
+function MovieGrid({ movies, onEdit }) {
   if (!movies || !movies.length) {
     return (
       <div
@@ -13,10 +13,10 @@ function MovieGrid({ movies }) {
   }
 
   return (
-    <div className="flex gap-3 overflow-x-auto overflow-y-hidden py-2 no-scrollbar">
+    <div className="no-scrollbar flex gap-3 overflow-x-auto overflow-y-hidden py-2">
       {movies.map((movie, index) => (
         <div key={movie._id || movie.id || index} className="shrink-0">
-          <MovieCard movie={movie} />
+          <MovieCard movie={movie} onEdit={onEdit} />
         </div>
       ))}
     </div>
