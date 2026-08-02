@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const passport = require("passport");
 
-require("./src/config/passport"); 
+require("./src/config/passport");
 const connectDB = require("./config/db");
 
 // Route imports
@@ -13,6 +13,8 @@ const userRoutes = require("./src/routes/userRoutes");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+app.set("trust proxy", 1);
 
 // Middlewares
 app.use(cors());
