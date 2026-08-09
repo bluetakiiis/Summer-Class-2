@@ -1,27 +1,28 @@
-import MovieCard from "../components/cards/MovieCard";
+import { useContext } from "react";
+import MovieGrid from "../components/movies/MovieGrid";
 import useSavedMovies from "../hooks/useSavedMovies";
+import { MovieContext } from "../context/MovieContext";
 
 function Liked({ movies }) {
   const resolvedMovies = useSavedMovies(movies);
+  const { isBlueTheme } = useContext(MovieContext);
 
-  if (resolvedMovies.length === 0) {
+  const filteredMovies = resolvedMovies.filter((movie) =>
+    isBlueTheme ? movie.media_type === "movie" : movie.media_type === "tv",
+  );
+
+  if (filteredMovies.length === 0) {
     return (
       <div
         className="flex h-40 items-center justify-center text-lg"
         style={{ color: "var(--text-light)" }}
       >
-        You haven't liked any shows yet.
+        You haven't liked any {isBlueTheme ? "movies" : "TV shows"} yet.
       </div>
     );
   }
 
-  return (
-    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {resolvedMovies.map((movie) => (
-        <MovieCard key={movie._id || movie.id} movie={movie} />
-      ))}
-    </div>
-  );
+  return <MovieGrid movies={filteredMovies} />;
 }
 
 export default Liked;

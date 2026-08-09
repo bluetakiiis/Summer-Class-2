@@ -10,6 +10,8 @@ const connectDB = require("./config/db");
 const authRoutes = require("./src/routes/authRoutes");
 const movieRoutes = require("./src/routes/movieRoutes");
 const userRoutes = require("./src/routes/userRoutes");
+const aiRoutes = require("./src/routes/aiRoutes");
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +27,8 @@ app.use(passport.initialize());
 app.use("/auth", authRoutes);
 app.use("/movies", movieRoutes);
 app.use("/users", userRoutes);
+
+app.use("/api/ai", aiRoutes);
 
 // Connect Database & Start Server
 const startServer = async () => {

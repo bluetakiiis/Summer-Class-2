@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Movie = require("../models/Movie");
+const { generateContent } = require("../services/GroqService");
 
 // GET /movies (Public)
 exports.getAllMovies = async (req, res) => {
@@ -146,6 +147,36 @@ exports.importTMDBMovie = async (req, res) => {
 
     res.status(500).json({
       message: err.message,
+    });
+  }
+};
+
+exports.summarizeMovie = async (req, res) => {
+  try {
+    const movie = req.body;
+
+    const prompt = `
+Summarize the following movie in one professional sentence.
+
+Title: ${movie.title}
+
+Description: ${movie.description}
+
+Rating: ${movie.rating}
+
+Please provide a concise one-sentence summary without adding information that isn't provided.
+`;
+
+    const response = await generateContent(prompt);
+
+    res.json({
+      summary: response,
+    });
+  } catch (error) {
+    console.log(error.message);
+
+    res.status(500).json({
+      error: "Failed to summarize movie",
     });
   }
 };

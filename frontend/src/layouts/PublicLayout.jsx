@@ -4,6 +4,7 @@ import Header from "../components/common/Header";
 import Sidebar from "../components/common/Sidebar";
 import AddButton from "../components/ui/AddButton";
 import MovieForm from "../components/forms/MovieForm";
+import Chatbot from "../components/ai/Chatbot";
 
 function PublicLayout({
   sidebarOpen,
@@ -53,6 +54,8 @@ function PublicLayout({
           {user && <AddButton onClick={() => setIsAdding(true)} />}
         </main>
       </div>
+
+      {user && <Chatbot />}
     </div>
   );
 }
